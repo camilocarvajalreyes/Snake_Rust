@@ -1,0 +1,29 @@
+-------------------------
+    DEVELOPMENT PLAN
+-------------------------
+
+Divide the task into two parts that can be coded in parallel:
+-   Server
+-   Client
+
+---------------
+------ SERVER
+---------------
+-> What must it do ?
+    *   Run the gameloop and print it to the screen every round
+    *   Receive and accept client requests for players to join
+    *   Pipe its STDOUT to the clients'
+    *   Include the client into the game
+    *   While !game-over: For each client : //CAN WE LISTEN TO ALL CLIENTS AT THE SAME TIME ?
+        - Listen to their inputgit checs (snake movements)
+        - Modify the gameloop to take the inputs into acount
+
+---------------
+------ CLIENT
+---------------
+-> What must it do?
+    *   Connect to the server via thread
+    *   Receive the user's commands
+    *   Send those commands to the server
+    *   Receive results from the server
+    *   Show the graphic interface to the user
