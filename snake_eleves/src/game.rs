@@ -35,6 +35,21 @@ impl Point {
     pub fn new(x: u16, y: u16) -> Self {
         Point { x, y }
     }
+    pub fn move(&self, direction : i32) -> Point { //returns another point moved in the specific direction
+        //direction 0 if up, 1 left, 2, down, 3 right
+        let mut xcor = self.x;
+        let mut ycor = self.y;
+        if direction==0 { //move up
+            ycor = ycor +1;
+        } else if direction==1 { //move left
+            xcor = xcor - 1;
+        } else if direction==2 { //moving down
+            ycor = ycor - 1;
+        } else if direction==3 { //move right
+            xcor = xcor + 1;
+        }
+        Point::new(xcor, ycor) //we must verify if it works!
+    }
 }
 
 impl Game {
@@ -131,7 +146,7 @@ pub fn init_game() -> Game {
     let game = Game {
         stdout: stdout,
         stdin: stdin,
-        snake: Snake {},
+        snake: Snake {}, // to do
         food: generate_food(),
         speed: SPEED,
         field: init_field(),
