@@ -1,14 +1,23 @@
+extern crate rand;
+
 use crate::snake::*;
 use std::io::{stdout, Stdout, Write};
 use std::thread::sleep;
 use std::time::Duration;
 use termion::raw::{IntoRawMode, RawTerminal};
 use termion::{async_stdin, clear, color, cursor, AsyncReader};
+use rand::Rng;
+use std::io::Read;
 
 // Largeur du terrain
 pub const WIDTH: usize = 60;
 // Longueur du terrain
 pub const HEIGHT: usize = 20;
+// First valid X coordinate in the field
+pub const FIRST_X: usize = 1;
+// First valid Y coordinate in the field
+pub const FIRST_Y: usize = 1;
+
 // Caractère représentant une pomme
 const FOOD_CHAR: char = 'Ծ';
 // Le temps que prend 1 tour de jeu en millisecondes
@@ -32,7 +41,7 @@ pub struct Point {
 }
 
 // Une strcture de direction haut niveau
-#[derive(PartialEq)]
+#[derive(PartialEq, Copy, Clone)]
 pub enum Dir {
     UP,
     LEFT,
@@ -115,21 +124,40 @@ impl Game {
 
     pub fn play(&mut self) {
         let mut i = 1;
+
         loop {
             write!(self.stdout, "{}", cursor::Goto(1, HEIGHT as u16 + i)).unwrap();
-            println!("Encore un tour de jeu");
+            //println!("Encore un tour de jeu");
             i += 1;
             // Pause le programme pendant _self.speed_
             sleep(Duration::from_millis(self.speed));
+            if try_quit_command() == true {
+                break
+            }
         }
     }
+}
+
+fn try_quit_command() -> bool {
+    let input = std::io::stdin()
+        .bytes() 
+        .next()
+        .and_then(|result| result.ok())
+        .map(|byte| byte as char).expect("");
+
+    if input == 'q' {
+        return true
+    }
+    false
 }
 
 // Génère aléatoirement un point dans l'espace du jeu
 // où sera placé la prochaine pomme
 fn generate_food() -> Point {
-    //TODO
-    Point::new(10, 10)
+    let mut rng = rand::thread_rng();
+    let x = rng.gen_range(5, WIDTH as u16);
+    let y = rng.gen_range(5, HEIGHT as u16);
+    Point::new(x, y)
 }
 
 // Initialise un espace de jeu
@@ -151,12 +179,12 @@ pub fn init_game() -> Game {
     // Voir la documentation de _termion__ pour plus d'informations
     let stdout = stdout().into_raw_mode().unwrap();
     let stdin = async_stdin();
-    let initial_point = Point::new(0, 0);
+    let initial_point = Point::new(5, 5);
 
     let game = Game {
         stdout: stdout,
         stdin: stdin,
-        snake: Snake::new(initial_point), // to do
+        snake: Snake::new(initial_point),
         food: generate_food(),
         speed: SPEED,
         field: init_field(),
