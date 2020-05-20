@@ -24,6 +24,12 @@ impl Snake {
         self.body.pop_front();
         // we need testing for this
     }
-    
-    pub fn grow(){} // we will use point.move for this as well
+    /* It adds a point on the head of the snake without getting rid of another point
+    to be called whenever a snake is about to encounter an apple*/
+    pub fn grow(&mut self){ 
+        // we will use point.move for this as well
+        let head = self.body.last();
+        let newPoint = head.go(self.direction);
+        self.body.push_back(newPoint);
+    }
 }
