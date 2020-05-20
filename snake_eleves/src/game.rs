@@ -132,6 +132,7 @@ impl Game {
             // Pause le programme pendant _self.speed_
             sleep(Duration::from_millis(self.speed));
             if try_quit_command() == true {
+                self.stdout.flush().unwrap(); //maybe should be different
                 break
             }
         }
@@ -167,7 +168,7 @@ pub fn init_field() -> [[char; WIDTH]; HEIGHT] {
     let mut field = [[' '; WIDTH]; HEIGHT];
     let c = '#';
     for i in 0..(WIDTH) {
-        field[HEIGHT / 2][i] = c;
+        field[FIRST_Y][i] = c;
     }
     field
 }
@@ -191,3 +192,5 @@ pub fn init_game() -> Game {
     };
     game
 }
+
+// NEXT STEP IS init_field
