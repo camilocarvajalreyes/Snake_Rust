@@ -1,4 +1,6 @@
-#![allow(dead_code)]
+#![allow(dead_code,unused_imports)]
+use crate::game::*; 
+use crate::snake::*; 
 pub mod game;
 pub mod snake;
 use std::io::Write;
