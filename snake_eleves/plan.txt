@@ -27,3 +27,4 @@ Divide the task into two parts that can be coded in parallel:
     *   Send those commands to the server
     *   Receive results from the server
     *   Show the graphic interface to the user
+    
