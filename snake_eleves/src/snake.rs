@@ -17,6 +17,7 @@ impl Snake {
     /* adds a point in the actual direction to the back (head)
        then deletes the element in the front (tail) 
     */
+    /*
     pub fn forward(&mut self){
         let head = self.body.back().unwrap();
         //there will be provlems since .back() returns a type Option object
@@ -25,6 +26,7 @@ impl Snake {
         self.body.pop_front();
         // we need testing for this
     }
+    
     /* It adds a point on the head of the snake without getting rid of another point
     to be called whenever a snake is about to encounter an apple*/
     pub fn grow(&mut self){ 
@@ -33,4 +35,5 @@ impl Snake {
         let newPoint = head.go(self.direction);
         self.body.push_back(newPoint);
     }
+    */
 }
