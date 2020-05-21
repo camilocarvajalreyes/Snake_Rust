@@ -8,18 +8,23 @@ use termion::raw::{IntoRawMode, RawTerminal};
 use termion::{async_stdin, clear, color, cursor, AsyncReader};
 use rand::Rng;
 use std::io::Read;
+use std::io;
+extern crate ncurses;
+use ncurses::*; // watch for globs
 
 // Largeur du terrain
 pub const WIDTH: usize = 60;
 // Longueur du terrain
 pub const HEIGHT: usize = 20;
 // First valid X coordinate in the field
-pub const FIRST_X: usize = 1;
+pub const FIRST_X: usize = 0;
 // First valid Y coordinate in the field
-pub const FIRST_Y: usize = 1;
+pub const FIRST_Y: usize = 0;
 
 // Caractère représentant une pomme
 const FOOD_CHAR: char = 'Ծ';
+// Caractère du serpent
+const SNAKE_CHAR: char = '*';
 // Le temps que prend 1 tour de jeu en millisecondes
 const SPEED: u64 = 1000;
 
@@ -124,40 +129,67 @@ impl Game {
 
     pub fn play(&mut self) {
         let mut i = 1;
+        let mut command;
+        let mut command_on = true;
 
         loop {
-            write!(self.stdout, "{}", cursor::Goto(1, HEIGHT as u16 + i)).unwrap();
-            //println!("Encore un tour de jeu");
+            write!(self.stdout, "{}", cursor::Hide).unwrap();
+            self.draw_snake();
             i += 1;
             // Pause le programme pendant _self.speed_
             sleep(Duration::from_millis(self.speed));
-            if try_quit_command() == true {
-                self.stdout.flush().unwrap(); //maybe should be different
-                break
+            command = try_command();
+            if command_on {
+                if command == "quit" {
+                    self.stdout.flush().unwrap(); //maybe should be different
+                    break
+                }
+                else if command == "grow" {
+                    self.snake.grow();
+                }
+                else if command == "deactivate" {
+                    command_on = false;
+                }
             }
         }
     }
+
+    pub fn draw_snake(&mut self) {
+        for p in self.snake.body.iter() {
+            write!(
+                self.stdout,
+                "{}{}",
+                cursor::Goto(p.x, p.y),
+                SNAKE_CHAR
+            )
+            .unwrap();
+        }
+        self.stdout.flush().unwrap();
+    }
 }
 
-fn try_quit_command() -> bool {
-    let input = std::io::stdin()
-        .bytes() 
-        .next()
-        .and_then(|result| result.ok())
-        .map(|byte| byte as char).expect("");
+fn try_command() -> String {
+    let input = getch();
 
     if input == 'q' {
-        return true
+        return String::from("quit")
     }
-    false
+    else if input == 'g' {
+        return String::from("grow")
+    }
+    else if input == 'd' {
+        return String::from("deactivate")
+    }
+
+    String::from("")
 }
 
 // Génère aléatoirement un point dans l'espace du jeu
 // où sera placé la prochaine pomme
 fn generate_food() -> Point {
     let mut rng = rand::thread_rng();
-    let x = rng.gen_range(5, WIDTH as u16);
-    let y = rng.gen_range(5, HEIGHT as u16);
+    let x = rng.gen_range((FIRST_X+1) as u16, (WIDTH) as u16);
+    let y = rng.gen_range((FIRST_Y+1) as u16, (HEIGHT-1) as u16);
     Point::new(x, y)
 }
 
@@ -169,7 +201,13 @@ pub fn init_field() -> [[char; WIDTH]; HEIGHT] {
     let c = '#';
     for i in 0..(WIDTH) {
         field[FIRST_Y][i] = c;
+        field[HEIGHT -1][i] = c;
     }
+    for j in 0..HEIGHT {
+        field[j][FIRST_X] = c;
+        field[j][WIDTH -1] = c;
+    }
+
     field
 }
 
@@ -181,6 +219,8 @@ pub fn init_game() -> Game {
     let stdout = stdout().into_raw_mode().unwrap();
     let stdin = async_stdin();
     let initial_point = Point::new(5, 5);
+    initnscr();
+    raw();
 
     let game = Game {
         stdout: stdout,
@@ -190,7 +230,8 @@ pub fn init_game() -> Game {
         speed: SPEED,
         field: init_field(),
     };
+
     game
 }
 
-// NEXT STEP IS init_field
+//NEXT Try to do non blocking input
