@@ -167,8 +167,11 @@ impl Game {
 }
 
 fn try_command() -> String {
-    let input = getch();
-
+    let input = std::io::stdin()	   
+            .bytes() 	
+            .next()	
+            .and_then(|result| result.ok())	
+            .map(|byte| byte as char).expect("");
     if input == 'q' {
         return String::from("quit")
     }
@@ -217,9 +220,6 @@ pub fn init_game() -> Game {
     let stdout = stdout().into_raw_mode().unwrap();
     let stdin = async_stdin();
     let initial_point = Point::new(5, 5);
-    initnscr();
-    raw();
-
     let game = Game {
         stdout: stdout,
         stdin: stdin,
