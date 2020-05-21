@@ -9,8 +9,6 @@ use termion::{async_stdin, clear, color, cursor, AsyncReader};
 use rand::Rng;
 use std::io::Read;
 use std::io;
-extern crate ncurses;
-use ncurses::*; // watch for globs
 
 // Largeur du terrain
 pub const WIDTH: usize = 60;
