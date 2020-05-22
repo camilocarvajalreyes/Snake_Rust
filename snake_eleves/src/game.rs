@@ -142,6 +142,12 @@ impl Game {
                     self.stdout.flush().unwrap(); //maybe should be different
                     break
                 }
+                else if command == "turn right" {
+                    self.snake.turn(Dir::RIGHT);
+                }
+                else if command == "turn left" {
+                    self.snake.turn(Dir::LEFT);
+                }
                 else if command == "grow" {
                     self.snake.grow();
                 }
@@ -149,6 +155,7 @@ impl Game {
                     command_on = false;
                 }
             }
+            self.snake.forward();
         }
     }
 
@@ -177,6 +184,12 @@ fn try_command() -> String {
     }
     else if input == 'g' {
         return String::from("grow")
+    }
+    else if input == 'r' {
+        return String::from("turn right");
+    }
+    else if input == 'l' {
+        return String::from("turn left");
     }
     else if input == 'd' {
         return String::from("deactivate")
