@@ -136,7 +136,9 @@ impl Game {
             i += 1;
             // Pause le programme pendant _self.speed_
             sleep(Duration::from_millis(self.speed));
-            command = try_command();
+            let input = self.stdin.read(); //we read the user commands
+            command = try_command(input); //we call an auxiliary function try_command
+            //teeeeeest
             if command_on {
                 if command == "quit" {
                     self.stdout.flush().unwrap(); //maybe should be different
@@ -173,12 +175,15 @@ impl Game {
     }
 }
 
-fn try_command() -> String {
-    let input = std::io::stdin()	   
-            .bytes() 	
-            .next()	
-            .and_then(|result| result.ok())	
-            .map(|byte| byte as char).expect("");
+fn try_command(input_result: Result<usize>) -> String { //fix error!!!
+    //cambiar
+    //let input = std::io::stdin()	   
+    //        .bytes() 	
+    //        .next()	
+    //        .and_then(|result| result.ok())	
+    //        .map(|byte| byte as char).expect("");
+    //cambiar
+    let input = input_result.unwrap_or('n'); //test me
     if input == 'q' {
         return String::from("quit")
     }
@@ -193,6 +198,8 @@ fn try_command() -> String {
     }
     else if input == 'd' {
         return String::from("deactivate")
+    }else if input == 'n'{
+        return String::from("grow") //in case nothing happens or an error happens
     }
 
     String::from("")
