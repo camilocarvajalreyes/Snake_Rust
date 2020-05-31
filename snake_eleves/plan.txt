@@ -1,13 +1,16 @@
 ------------------
     PLANNING
 ------------------
-- C, (Game) Function to get asynchronous user input 
-- C, (Game) Function to check collisions 
-- C, (Snake) Change snake.turn() to snake.changeDir() // Attention to going to the opposite direction of movement
-- C, (Game) Manage to erase previous dots of snake 
+- (Game) Function to check collisions of the snake with itself
 - (All) Change architecture
 - (All) Add compteur de points
 - (All) Solve problems
+- Set the maximum number of simultaneous players to 4
+
+
+Client-Server code based on these pages:
+https://riptutorial.com/rust/example/4404/a-simple-tcp-client-and-server-application--echo
+https://doc.rust-lang.org/book/ch20-02-multithreaded.html
 
 
 
