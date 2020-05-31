@@ -1,19 +1,13 @@
 ------------------
     PLANNING
 ------------------
-- (Game) Function to get asynchronous user input 
-- (Game) Function to check collisions 
-- (Snake) Change snake.turn() to snake.changeDir() // Attention to going to the opposite direction of movement
-- (Game) Manage to erase previous dots of snake 
-- 
-
-
-
-
-
-
-
-
+- C, (Game) Function to get asynchronous user input 
+- C, (Game) Function to check collisions 
+- C, (Snake) Change snake.turn() to snake.changeDir() // Attention to going to the opposite direction of movement
+- C, (Game) Manage to erase previous dots of snake 
+- (All) Change architecture
+- (All) Add compteur de points
+- (All) Solve problems
 
 
 

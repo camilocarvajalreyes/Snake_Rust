@@ -11,7 +11,7 @@ impl Snake {
     pub fn new(initial_point: Point) -> Self { 
         let mut vec = VecDeque::new();
         vec.push_back(initial_point);
-        Snake {body: vec, direction: Dir::UP} //function that returns a single point snake going up as default
+        Snake {body: vec, direction: Dir::RIGHT} //function that returns a single point snake going up as default
     }
 
     /* adds a point in the actual direction to the back (head)

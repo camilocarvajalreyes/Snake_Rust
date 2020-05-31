@@ -14,10 +14,15 @@ use std::io;
 pub const WIDTH: usize = 60;
 // Longueur du terrain
 pub const HEIGHT: usize = 20;
-// First valid X coordinate in the field
-pub const FIRST_X: usize = 0;
-// First valid Y coordinate in the field
-pub const FIRST_Y: usize = 0;
+// First valid X coordinate inside the field
+pub const FIRST_X: usize = 2;
+// First valid Y coordinate inside the field
+pub const FIRST_Y: usize = 2;
+// Last valid X coordinate inside the field
+pub const LAST_X: usize = WIDTH-1;
+// Last valid Y coordinate inside the field
+pub const LAST_Y: usize = HEIGHT-1;
+
 
 // Caractère représentant une pomme
 const FOOD_CHAR: char = 'Ծ';
@@ -38,6 +43,7 @@ pub struct Game {
 }
 
 // Une coordonnée de notre terrain
+#[derive(PartialEq)] 
 pub struct Point {
     pub x: u16,
     pub y: u16,
@@ -61,11 +67,11 @@ impl Point {
         let mut xcor = self.x;
         let mut ycor = self.y;
         if direction == Dir::UP { //move up
-            ycor = ycor +1;
+            ycor = ycor - 1;
         } else if direction == Dir::LEFT { //move left
             xcor = xcor - 1;
         } else if direction == Dir::DOWN { //moving down
-            ycor = ycor - 1;
+            ycor = ycor + 1;
         } else if direction == Dir::RIGHT { //move right
             xcor = xcor + 1;
         }
@@ -125,40 +131,64 @@ impl Game {
         self.stdout.flush().unwrap();
     }
 
+    /*
+    Plays the game with the following set of keys U/D/L/R:
+        - Z/S/Q/D
+    */
     pub fn play(&mut self) {
-        let mut i = 1;
-        let mut command;
-        let mut command_on = true;
+        let mut buffer = String::new();
+        //hide cursor
+        write!(self.stdout, "{}", cursor::Hide).unwrap();
 
         loop {
-            write!(self.stdout, "{}", cursor::Hide).unwrap();
-            self.draw_snake();
-            i += 1;
-            // Pause le programme pendant _self.speed_
+            // sleep according to game speed
             sleep(Duration::from_millis(self.speed));
-            let input = self.stdin.read(); //we read the user commands
-            command = try_command(input); //we call an auxiliary function try_command
-            //teeeeeest
-            if command_on {
-                if command == "quit" {
-                    self.stdout.flush().unwrap(); //maybe should be different
-                    break
-                }
-                else if command == "turn right" {
-                    self.snake.turn(Dir::RIGHT);
-                }
-                else if command == "turn left" {
-                    self.snake.turn(Dir::LEFT);
-                }
-                else if command == "grow" {
-                    self.snake.grow();
-                }
-                else if command == "deactivate" {
-                    command_on = false;
-                }
+
+            //did it collide with a wall ?
+            if self.snake_hit_wall() {
+                break
             }
+
+            if self.snake_got_food() {
+                self.snake.grow();
+                self.food = generate_food();
+            }
+            
+            //draw elements
+            self.draw_field();
+            self.draw_food();
+            self.draw_snake();
+
+            //asynchronous read
+            self.stdin.read_to_string(&mut buffer).expect("");
+            
+            //treat input
+            if buffer == "p" {
+                self.stdout.flush().unwrap(); //maybe should be different
+                break
+            }
+            else if buffer == "d" {
+                self.snake.turn(Dir::RIGHT);
+            }
+            else if buffer == "z" {
+                self.snake.turn(Dir::UP);
+            }
+            else if buffer == "s" {
+                self.snake.turn(Dir::DOWN);
+            }
+            else if buffer == "q" {
+                self.snake.turn(Dir::LEFT);
+            }
+
+            //moves the snake
             self.snake.forward();
+
+            //reset buffer
+            buffer = String::from("");
+                        
         }
+        //unhide cursor
+        write!(self.stdout, "{}", cursor::Show).unwrap();
     }
 
     pub fn draw_snake(&mut self) {
@@ -173,44 +203,39 @@ impl Game {
         }
         self.stdout.flush().unwrap();
     }
-}
 
-fn try_command(input_result: Result<usize>) -> String { //fix error!!!
-    //cambiar
-    //let input = std::io::stdin()	   
-    //        .bytes() 	
-    //        .next()	
-    //        .and_then(|result| result.ok())	
-    //        .map(|byte| byte as char).expect("");
-    //cambiar
-    let input = input_result.unwrap_or('n'); //test me
-    if input == 'q' {
-        return String::from("quit")
-    }
-    else if input == 'g' {
-        return String::from("grow")
-    }
-    else if input == 'r' {
-        return String::from("turn right");
-    }
-    else if input == 'l' {
-        return String::from("turn left");
-    }
-    else if input == 'd' {
-        return String::from("deactivate")
-    }else if input == 'n'{
-        return String::from("grow") //in case nothing happens or an error happens
+    /*
+    check collision between the snake and the walls
+    returns true if it hit a wall or false otherwise
+    NEED TO IMPLEMENT COLLISION OF THE SNAKE WITH ITSELF
+    */
+    fn snake_hit_wall(&self) -> bool {
+        let head = self.snake.body.back().unwrap();
+        if head.x > LAST_X as u16 || head.x < FIRST_X as u16 
+            || head.y > LAST_Y as u16 || head.y < FIRST_Y as u16
+        {
+            return true;
+        }
+
+        false
     }
 
-    String::from("")
+    fn snake_got_food(&self) -> bool {
+        let head = self.snake.body.back().unwrap();
+        if head == &self.food {
+            return true;
+        }
+        false
+    }
+
 }
 
 // Génère aléatoirement un point dans l'espace du jeu
 // où sera placé la prochaine pomme
 fn generate_food() -> Point {
     let mut rng = rand::thread_rng();
-    let x = rng.gen_range((FIRST_X+1) as u16, (WIDTH) as u16);
-    let y = rng.gen_range((FIRST_Y+1) as u16, (HEIGHT-1) as u16);
+    let x = rng.gen_range(FIRST_X as u16, LAST_X as u16);
+    let y = rng.gen_range(FIRST_Y as u16, LAST_Y as u16);
     Point::new(x, y)
 }
 
@@ -221,11 +246,11 @@ pub fn init_field() -> [[char; WIDTH]; HEIGHT] {
     let mut field = [[' '; WIDTH]; HEIGHT];
     let c = '#';
     for i in 0..(WIDTH) {
-        field[FIRST_Y][i] = c;
+        field[FIRST_Y -2][i] = c;
         field[HEIGHT -1][i] = c;
     }
     for j in 0..HEIGHT {
-        field[j][FIRST_X] = c;
+        field[j][FIRST_X -2] = c;
         field[j][WIDTH -1] = c;
     }
 
