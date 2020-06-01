@@ -144,11 +144,15 @@ impl Game {
             sleep(Duration::from_millis(self.speed));
             //did it collide with a wall ?
             if self.snake_hit_wall() {
-                break //to be change to only deactivating the given snake
+                let score = self.snake.kill();
+                println!("Score {}: {}", self.snake.name, score);
+                break
             }
             //did it collide with itself ?
             if self.snake_hit_itself() {
-                break //to be change to only deactivating the given snake
+                let score = self.snake.kill();
+                println!("Score {}: {}", self.snake.name, score);
+                break
             }
             //did it reach the food ?
             if self.snake_got_food() {

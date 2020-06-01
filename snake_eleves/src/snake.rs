@@ -68,8 +68,10 @@ impl Snake {
     pub fn activate(&mut self) {
         self.active = true;
     }
-    pub fn kill(&mut self) {
+    pub fn kill(&mut self) -> i32 {
         self.active = false;
-        // to add score
+        let x = self.body.len();
+        let y = x as i32;
+        y
     }
 }
