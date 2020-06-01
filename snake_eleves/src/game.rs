@@ -36,7 +36,7 @@ pub struct Game {
     pub stdout: RawTerminal<Stdout>,
     // Une entrée stdin asynchrone
     stdin: AsyncReader,
-    snake: Snake,
+    snakes: (Snake,Snake),
     food: Point,
     speed: u64,
     field: [[char; WIDTH]; HEIGHT],
@@ -144,19 +144,19 @@ impl Game {
             sleep(Duration::from_millis(self.speed));
             //did it collide with a wall ?
             if self.snake_hit_wall() {
-                let score = self.snake.kill();
-                println!("Score {}: {}", self.snake.name, score);
+                let score = self.snakes.0.kill();
+                println!("Score {}: {}", self.snakes.0.name, score);
                 break
             }
             //did it collide with itself ?
             if self.snake_hit_itself() {
-                let score = self.snake.kill();
-                println!("Score {}: {}", self.snake.name, score);
+                let score = self.snakes.0.kill();
+                println!("Score {}: {}", self.snakes.0.name, score);
                 break
             }
             //did it reach the food ?
             if self.snake_got_food() {
-                self.snake.grow();
+                self.snakes.0.grow();
                 self.food = generate_food();
             }
             //draw elements
@@ -171,27 +171,27 @@ impl Game {
                 self.stdout.flush().unwrap(); //maybe should be different
                 break
             }
-            else if buffer.contains(&self.snake.control.3) {
-                self.snake.turn(Dir::RIGHT);
+            else if buffer.contains(&self.snakes.0.control.3) {
+                self.snakes.0.turn(Dir::RIGHT);
             }
-            else if buffer.contains(&self.snake.control.0) {
-                self.snake.turn(Dir::UP);
+            else if buffer.contains(&self.snakes.0.control.0) {
+                self.snakes.0.turn(Dir::UP);
             }
-            else if buffer.contains(&self.snake.control.1) {
-                self.snake.turn(Dir::DOWN);
+            else if buffer.contains(&self.snakes.0.control.1) {
+                self.snakes.0.turn(Dir::DOWN);
             }
-            else if buffer.contains(&self.snake.control.2) {
-                self.snake.turn(Dir::LEFT);
+            else if buffer.contains(&self.snakes.0.control.2) {
+                self.snakes.0.turn(Dir::LEFT);
             }
             else if buffer == "w" {
-                self.snake.grow();
-                self.snake.grow();
-                self.snake.grow();
-                self.snake.grow();
-                self.snake.grow();
+                self.snakes.0.grow();
+                self.snakes.0.grow();
+                self.snakes.0.grow();
+                self.snakes.0.grow();
+                self.snakes.0.grow();
             }
             //moves the snake
-            self.snake.go_forward();
+            self.snakes.0.go_forward();
             //reset buffer
             buffer = String::from("");
         }
@@ -200,7 +200,7 @@ impl Game {
     }
 
     pub fn draw_snake(&mut self) {
-        for p in self.snake.body.iter() {
+        for p in self.snakes.0.body.iter() {
             write!(
                 self.stdout,
                 "{}{}",
@@ -218,7 +218,7 @@ impl Game {
     NEED TO IMPLEMENT COLLISION OF THE SNAKE WITH ITSELF
     */
     fn snake_hit_wall(&self) -> bool {
-        let head = self.snake.body.back().unwrap();
+        let head = self.snakes.0.body.back().unwrap();
         if head.x > LAST_X as u16 || head.x < FIRST_X as u16 
             || head.y > LAST_Y as u16 || head.y < FIRST_Y as u16
         {
@@ -229,18 +229,18 @@ impl Game {
     }
 
     fn snake_hit_itself(&mut self) -> bool {
-        let head = self.snake.body.pop_back().unwrap();
-        for body_part in self.snake.body.iter() {
+        let head = self.snakes.0.body.pop_back().unwrap();
+        for body_part in self.snakes.0.body.iter() {
             if head == *body_part {
                 return true;
             }
         }
-        self.snake.body.push_back(head);
+        self.snakes.0.body.push_back(head);
         false
     }
 
     fn snake_got_food(&self) -> bool {
-        let head = self.snake.body.back().unwrap();
+        let head = self.snakes.0.body.back().unwrap();
         if head == &self.food {
             return true;
         }
@@ -283,11 +283,14 @@ pub fn init_game() -> Game {
     // Voir la documentation de _termion__ pour plus d'informations
     let stdout = stdout().into_raw_mode().unwrap();
     let stdin = async_stdin();
-    let initial_point = Point::new(5, 5);
+    let initial_point1 = Point::new(5, 5);
+    let initial_point2 = Point::new(10, 10);
+    let mut snake1 = Snake::new(initial_point1, ("i".to_string(),"k".to_string(),"j".to_string(),"l".to_string()), "Player1".to_string());
+    let mut snake2 = Snake::new(initial_point2, ("d".to_string(),"x".to_string(),"z".to_string(),"c".to_string()), "Player2".to_string());
     let game = Game {
         stdout: stdout,
         stdin: stdin,
-        snake: Snake::new(initial_point, ("i".to_string(),"k".to_string(),"j".to_string(),"l".to_string()), "Player1".to_string()),
+        snakes: (snake1, snake2),
         food: generate_food(),
         speed: SPEED,
         field: init_field(),
