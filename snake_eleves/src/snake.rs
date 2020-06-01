@@ -69,6 +69,7 @@ impl Snake {
         self.active = true;
     }
     pub fn kill(&mut self) -> i32 {
+        // deactivates snake and it shows the current length as score
         self.active = false;
         let x = self.body.len();
         let y = x as i32;
