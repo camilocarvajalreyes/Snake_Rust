@@ -144,11 +144,11 @@ impl Game {
             sleep(Duration::from_millis(self.speed));
             //did it collide with a wall ?
             if self.snake_hit_wall() {
-                break
+                break //to be change to only deactivating the given snake
             }
             //did it collide with itself ?
             if self.snake_hit_itself() {
-                break
+                break //to be change to only deactivating the given snake
             }
             //did it reach the food ?
             if self.snake_got_food() {
@@ -167,16 +167,16 @@ impl Game {
                 self.stdout.flush().unwrap(); //maybe should be different
                 break
             }
-            else if buffer.contains("l") {
+            else if buffer.contains(&self.snake.control.3) {
                 self.snake.turn(Dir::RIGHT);
             }
-            else if buffer.contains("i") {
+            else if buffer.contains(&self.snake.control.0) {
                 self.snake.turn(Dir::UP);
             }
-            else if buffer.contains("k") {
+            else if buffer.contains(&self.snake.control.1) {
                 self.snake.turn(Dir::DOWN);
             }
-            else if buffer.contains("j") {
+            else if buffer.contains(&self.snake.control.2) {
                 self.snake.turn(Dir::LEFT);
             }
             else if buffer == "w" {
@@ -283,7 +283,7 @@ pub fn init_game() -> Game {
     let game = Game {
         stdout: stdout,
         stdin: stdin,
-        snake: Snake::new(initial_point),
+        snake: Snake::new(initial_point, ("i".to_string(),"k".to_string(),"j".to_string(),"l".to_string()), "Player1".to_string()),
         food: generate_food(),
         speed: SPEED,
         field: init_field(),

@@ -5,13 +5,18 @@ use std::collections::VecDeque;
 
 pub struct Snake { //construction of the strut snake
     pub body: VecDeque<Point>, //body of the snake as a list of Points
-    pub direction: Dir, 
+    pub direction: Dir, // direction in which the head points, we created a special struc for that
+    pub control: (String, String, String, String), //keys for moving the snake
+    pub active: bool, // is it active or not (useful for multiplayer)
+    pub name: String, // name of the snake. Example: Player1, Artur, etc
 }
 impl Snake {
-    pub fn new(initial_point: Point) -> Self { 
+    pub fn new(initial_point: Point, controllers: (String, String, String, String), player: String) -> Self { 
+        // order of controllers: up, down, left and right
         let mut vec = VecDeque::new();
         vec.push_back(initial_point);
-        Snake {body: vec, direction: Dir::RIGHT} //function that returns a single point snake going up as default
+        Snake {body: vec, direction: Dir::RIGHT, control: controllers, active: false, name: player} 
+        //function that returns a single point. Snake going up by default.
     }
 
     /*
@@ -59,5 +64,12 @@ impl Snake {
             Dir::UP => self.direction = Dir::UP,
             Dir::DOWN => self.direction = Dir::DOWN,
         }
+    }
+    pub fn activate(&mut self) {
+        self.active = true;
+    }
+    pub fn kill(&mut self) {
+        self.active = false;
+        // to add score
     }
 }
