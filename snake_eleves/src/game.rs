@@ -29,7 +29,7 @@ const FOOD_CHAR: char = 'Ծ';
 // Caractère du serpent
 const SNAKE_CHAR: char = '*';
 // Le temps que prend 1 tour de jeu en millisecondes
-const SPEED: u64 = 1000;
+const SPEED: u64 = 500;
 
 pub struct Game {
     // Sortie stdout en mode "raw"
@@ -133,59 +133,62 @@ impl Game {
 
     /*
     Plays the game with the following set of keys U/D/L/R:
-        - Z/S/Q/D
+        - U/H/J/K
     */
     pub fn play(&mut self) {
         let mut buffer = String::new();
         //hide cursor
         write!(self.stdout, "{}", cursor::Hide).unwrap();
-
         loop {
             // sleep according to game speed
             sleep(Duration::from_millis(self.speed));
-
             //did it collide with a wall ?
             if self.snake_hit_wall() {
                 break
             }
-
+            //did it collide with itself ?
+            if self.snake_hit_itself() {
+                break
+            }
+            //did it reach the food ?
             if self.snake_got_food() {
                 self.snake.grow();
                 self.food = generate_food();
             }
-            
             //draw elements
             self.draw_field();
             self.draw_food();
             self.draw_snake();
-
             //asynchronous read
             self.stdin.read_to_string(&mut buffer).expect("");
-            
             //treat input
             if buffer == "p" {
                 self.stdout.flush().unwrap(); //maybe should be different
                 break
             }
-            else if buffer == "d" {
+            else if buffer == "k" {
                 self.snake.turn(Dir::RIGHT);
             }
-            else if buffer == "z" {
+            else if buffer == "u" {
                 self.snake.turn(Dir::UP);
             }
-            else if buffer == "s" {
+            else if buffer == "j" {
                 self.snake.turn(Dir::DOWN);
             }
-            else if buffer == "q" {
+            else if buffer == "h" {
                 self.snake.turn(Dir::LEFT);
             }
-
+            else if buffer == "w" {
+                self.snake.grow();
+                self.snake.grow();
+                self.snake.grow();
+                self.snake.grow();
+                self.snake.grow();
+            }
             //moves the snake
-            self.snake.forward();
-
+            self.snake.go_forward();
             //reset buffer
             buffer = String::from("");
-                        
         }
         //unhide cursor
         write!(self.stdout, "{}", cursor::Show).unwrap();
@@ -217,6 +220,17 @@ impl Game {
             return true;
         }
 
+        false
+    }
+
+    fn snake_hit_itself(&mut self) -> bool {
+        let head = self.snake.body.pop_back().unwrap();
+        for body_part in self.snake.body.iter() {
+            if head == *body_part {
+                return true;
+            }
+        }
+        self.snake.body.push_back(head);
         false
     }
 

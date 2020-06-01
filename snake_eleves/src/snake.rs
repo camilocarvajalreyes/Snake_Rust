@@ -14,10 +14,24 @@ impl Snake {
         Snake {body: vec, direction: Dir::RIGHT} //function that returns a single point snake going up as default
     }
 
+    /*
+    Moves the snake forward but takes into account the dimension distortion of the field.
+    Moves two points horizontally and only one vertically
+    */
+    pub fn go_forward(&mut self) {
+        // Leaving the idea on hold because it caused problems regarding eating food
+        /* 
+        if self.direction == Dir::RIGHT || self.direction == Dir::LEFT {
+            self.forward();
+        }
+        */
+        self.forward();
+    }
+
     /* adds a point in the actual direction to the back (head)
        then deletes the element in the front (tail) 
     */
-    pub fn forward(&mut self){
+    fn forward(&mut self){
         let head = self.body.back().unwrap();
         //there will be provlems since .back() returns a type Option object
         let new_point = head.go(self.direction); //see move function for point in game.rs
