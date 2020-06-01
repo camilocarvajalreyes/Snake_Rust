@@ -161,21 +161,22 @@ impl Game {
             self.draw_snake();
             //asynchronous read
             self.stdin.read_to_string(&mut buffer).expect("");
+            //println!("buffer = {}", buffer); 
             //treat input
-            if buffer == "p" {
+            if buffer == "q" {
                 self.stdout.flush().unwrap(); //maybe should be different
                 break
             }
-            else if buffer == "k" {
+            else if buffer.contains("l") {
                 self.snake.turn(Dir::RIGHT);
             }
-            else if buffer == "u" {
+            else if buffer.contains("i") {
                 self.snake.turn(Dir::UP);
             }
-            else if buffer == "j" {
+            else if buffer.contains("k") {
                 self.snake.turn(Dir::DOWN);
             }
-            else if buffer == "h" {
+            else if buffer.contains("j") {
                 self.snake.turn(Dir::LEFT);
             }
             else if buffer == "w" {
