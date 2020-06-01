@@ -18,18 +18,38 @@ fn instructions(input: String) -> i8 {
     let mut successful: i8 = -1;
     if input.chars().nth(0)==Some('1') {
         println!("You have chosen single mode! Life is a competition not with others, but with ourselves...");
-        println!("Move your snake with: u for going up, j for going down, h left and k right!");
+        println!("Move your snake with: i for going up, k for going down, j left and l right!");
         sleep(Duration::from_millis(PAUSE));
-        successful = 0;
+        successful = 1;
     } else if input.chars().nth(0)==Some('2'){ 
         println!("Okay for two players! No wise combatant underestimates their antagonist...");
-        println!("Player 1: move your snake with u for going up, j for going down, h left and k right!");
+        println!("Player 1: move your snake with i for going up, k for going down, j left and l right!");
         sleep(Duration::from_millis(PAUSE));
-        println!("Player 2: move your snake with d for going up, c for going down, x left and v right!");
+        println!("Player 2: move your snake with f for going up, c for going down, x left and v right!");
         sleep(Duration::from_millis(PAUSE));
-        successful = 0;
+        successful = 2;
+    } else if input.chars().nth(0)==Some('3'){ 
+        println!("Okay for three players! No wise combatant underestimates their antagonist...");
+        println!("Player 1: move your snake with i for going up, k for going down, j left and l right!");
+        sleep(Duration::from_millis(PAUSE));
+        println!("Player 2: move your snake with f for going up, c for going down, x left and v right!");
+        sleep(Duration::from_millis(PAUSE));
+        println!("Player 3: move your snake with h for going up, n for going down, b left and m right!");
+        sleep(Duration::from_millis(PAUSE));
+        successful = 3;
+    } else if input.chars().nth(0)==Some('4'){ 
+        println!("Okay for three players! No wise combatant underestimates their antagonist...");
+        println!("Player 1: move your snake with i for going up, k for going down, j left and l right!");
+        sleep(Duration::from_millis(PAUSE));
+        println!("Player 2: move your snake with f for going up, c for going down, x left and v right!");
+        sleep(Duration::from_millis(PAUSE));
+        println!("Player 3: move your snake with h for going up, n for going down, b left and m right!");
+        sleep(Duration::from_millis(PAUSE));
+        println!("Player 4: move your snake with w for going up, s for going down, a left and d right!");
+        sleep(Duration::from_millis(PAUSE));
+        successful = 4;
     } else {
-        println!("Pardon? Pick a number between 0 and 1 and start again :)");
+        println!("Pardon? Pick a number between 0 and 4");
     }
     successful
 }
@@ -37,19 +57,19 @@ fn instructions(input: String) -> i8 {
 fn main() {
     //source : https://www.youtube.com/watch?v=07pDD0uLjYc
     let mut input = String::new();
-    println!("How many players do you want? (2 maximum):");
+    println!("How many players do you want? (4 maximum):");
     match io::stdin().read_line(&mut input) {
         Ok(_) => {
             let success = instructions(input);
-            if success == 0 {
-                println!("All right then, let's play!");
+            if success != -1 {
+                println!("All right then, let's play! Press q if you want to exit the game");
                 sleep(Duration::from_millis(PAUSE));
                 let mut game = game::init_game();
                 game.play();
                 // Place le curseur tout en bas
                 write!(game.stdout, "{}", cursor::Goto(1, (game::HEIGHT+2) as u16)).unwrap();
             }
-            else {println!("Oops, that went wrong somehow...");}
+            else {println!("Try again");}
         }
         Err(e) => {
             println!("Sorry, something went wrong: {}", e);
