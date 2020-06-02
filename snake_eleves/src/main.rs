@@ -64,7 +64,7 @@ fn main() {
             if success != -1 {
                 println!("All right then, let's play! Press q if you want to exit the game");
                 sleep(Duration::from_millis(PAUSE));
-                let mut game = game::init_game();
+                let mut game = game::init_game(success);
                 game.play();
                 // Place le curseur tout en bas
                 write!(game.stdout, "{}", cursor::Goto(1, (game::HEIGHT+2) as u16)).unwrap();

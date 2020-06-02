@@ -198,16 +198,18 @@ impl Game {
 
     pub fn draw_snake(&mut self) {
         for snk in self.snakes.iter_mut() {
-            for p in snk.body.iter() {
-                write!(
-                    self.stdout,
-                    "{}{}",
-                    cursor::Goto(p.x, p.y),
-                    SNAKE_CHAR
-                )
-                .unwrap();
+            if snk.active==true{
+                for p in snk.body.iter() {
+                    write!(
+                        self.stdout,
+                        "{}{}",
+                        cursor::Goto(p.x, p.y),
+                        SNAKE_CHAR
+                    )
+                    .unwrap();
+                }
+                self.stdout.flush().unwrap();
             }
-            self.stdout.flush().unwrap();
         }
     }
 
@@ -288,7 +290,7 @@ pub fn init_field() -> [[char; WIDTH]; HEIGHT] {
 }
 
 // Initialise une structure Game
-pub fn init_game() -> Game {
+pub fn init_game(mode: i8) -> Game {
     // Donne une console "statique" permettant de faire des
     // applications dans le terminal
     // Voir la documentation de _termion__ pour plus d'informations
@@ -299,14 +301,24 @@ pub fn init_game() -> Game {
     let initial_point3 = Point::new(9, 16);
     let initial_point4 = Point::new(50, 5);
     let mut snake1 = Snake::new(initial_point1, ("i".to_string(),"k".to_string(),"j".to_string(),"l".to_string()), "Player1".to_string());
-    snake1.activate();
     let mut snake2 = Snake::new(initial_point2, ("d".to_string(),"x".to_string(),"z".to_string(),"c".to_string()), "Player2".to_string());
     let mut snake3 = Snake::new(initial_point3, ("h".to_string(),"n".to_string(),"b".to_string(),"m".to_string()), "Player3".to_string());
     let mut snake4 = Snake::new(initial_point4, ("w".to_string(),"s".to_string(),"a".to_string(),"d".to_string()), "Player4".to_string());
+    snake1.activate();
+    snake2.activate();
+    snake3.activate();
+    snake4.activate();
+    let mut snakes_vec = vec![snake1, snake2, snake3, snake4];
+    let mut i = mode;
+    while i<4 {
+        let j = i as usize;
+        snakes_vec[j].deactivate();
+        i += 1;
+    }
     let game = Game {
         stdout: stdout,
         stdin: stdin,
-        snakes: vec![snake1, snake2, snake3, snake4],
+        snakes: snakes_vec,
         food: generate_food(),
         speed: SPEED,
         field: init_field(),

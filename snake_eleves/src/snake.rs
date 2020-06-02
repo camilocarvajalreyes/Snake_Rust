@@ -68,6 +68,9 @@ impl Snake {
     pub fn activate(&mut self) {
         self.active = true;
     }
+    pub fn deactivate(&mut self) {
+        self.active = false;
+    }
     pub fn kill(&mut self) -> i32 {
         // deactivates snake and it shows the current length as score
         self.active = false;
