@@ -152,10 +152,7 @@ impl Game {
                 break
             }
             //did it reach the food ?
-            if self.snake_got_food() {
-                self.snakes[0].grow();
-                self.food = generate_food();
-            }
+            self.snake_got_food();
             //draw elements
             self.draw_field();
             self.draw_food();
@@ -228,7 +225,6 @@ impl Game {
     returns true if it hit a wall or false otherwise
     NEED TO IMPLEMENT COLLISION OF THE SNAKE WITH ITSELF
     */
-
     fn snake_hit_wall(&mut self) {
         for snk in self.snakes.iter_mut() {
             let head = snk.body.back().unwrap();
@@ -268,12 +264,14 @@ impl Game {
         death
     }
 
-    fn snake_got_food(&self) -> bool {
-        let head = self.snakes[0].body.back().unwrap();
-        if head == &self.food {
-            return true;
+    fn snake_got_food(&mut self) {
+        for snk in self.snakes.iter_mut(){
+            let head = snk.body.back().unwrap();
+            if head == &self.food {
+                snk.grow();
+                self.food = generate_food();
+            }
         }
-        false
     }
 
 }
