@@ -30,7 +30,7 @@ impl Snake {
             self.forward();
         }
         */
-        self.forward();
+        self.forward(); /////////////////////////////////////////////////////////////////////////////////
     }
 
     /* adds a point in the actual direction to the back (head)
@@ -39,7 +39,7 @@ impl Snake {
     fn forward(&mut self){
         let head = self.body.back().unwrap();
         //there will be provlems since .back() returns a type Option object
-        let new_point = head.go(self.direction); //see move function for point in game.rs
+        let new_point = head.go(self.direction); //see move function for point in game.rs //////////////
         self.body.push_back(new_point);
         self.body.pop_front();
         // we need testing for this
@@ -67,12 +67,5 @@ impl Snake {
     }
     pub fn deactivate(&mut self) {
         self.active = false;
-    }
-    pub fn kill(&mut self) -> i32 {
-        // deactivates snake and it shows the current length as score
-        self.active = false;
-        let x = self.body.len();
-        let y = x as i32;
-        y
     }
 }

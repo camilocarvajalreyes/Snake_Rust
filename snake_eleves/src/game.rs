@@ -67,7 +67,7 @@ impl Point {
         let mut xcor = self.x;
         let mut ycor = self.y;
         if direction == Dir::UP { //move up
-            ycor = ycor - 1;
+            ycor = ycor - 1; //################################################################
         } else if direction == Dir::LEFT { //move left
             xcor = xcor - 1;
         } else if direction == Dir::DOWN { //moving down
@@ -148,7 +148,6 @@ impl Game {
             // self.snake_hit_itself();
             // all they all dead?
             if self.all_dead(){
-                // show results
                 break
             }
             //did it reach the food ?
@@ -186,7 +185,7 @@ impl Game {
             }
             //moves the snake
             for snk in self.snakes.iter_mut(){
-                snk.go_forward();
+                snk.go_forward(); ////////////////////////////////////////////////////////////////////
             }
             //reset buffer
             buffer = String::from("");
@@ -211,15 +210,6 @@ impl Game {
             }
         }
     }
-    /*fn one_remaining(&self) -> bool {
-        let mut death_number = 0;
-        for snk in self.snakes.iter(){
-            if snk.active==true {
-                death_number+=1;
-            }
-        }
-        death_number==1
-    }*/
     /*
     check collision between the snake and the walls
     returns true if it hit a wall or false otherwise
@@ -229,16 +219,9 @@ impl Game {
         for snk in self.snakes.iter_mut() {
             let head = snk.body.back().unwrap();
             if head.x > LAST_X as u16 || head.x < FIRST_X as u16 
-                || head.y > LAST_Y as u16 || head.y < FIRST_Y as u16
-            /*{   *if self_copy.one_remaining(){
-                let score = snk.kill();
-                println!("Score {}: {}", snk.name, score);
-            }else {
-                snk.deactivate()
+                || head.y > LAST_Y as u16 || head.y < FIRST_Y as u16 {
+                    snk.deactivate()
             }
-            }*/
-            {let score = snk.kill();
-            println!("Score {}: {}", snk.name, score);}
         }
     }
 
@@ -336,5 +319,3 @@ pub fn init_game(mode: i8) -> Game {
 
     game
 }
-
-//NEXT Try to do non blocking input
