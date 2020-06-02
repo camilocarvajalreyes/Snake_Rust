@@ -164,31 +164,33 @@ impl Game {
             self.stdin.read_to_string(&mut buffer).expect("");
             //println!("buffer = {}", buffer); 
             //treat input
-            if buffer == "q" {
-                self.stdout.flush().unwrap(); //maybe should be different
-                break
-            }
-            else if buffer.contains(&self.snakes[0].control.3) {
-                self.snakes[0].turn(Dir::RIGHT);
-            }
-            else if buffer.contains(&self.snakes[0].control.0) {
-                self.snakes[0].turn(Dir::UP);
-            }
-            else if buffer.contains(&self.snakes[0].control.1) {
-                self.snakes[0].turn(Dir::DOWN);
-            }
-            else if buffer.contains(&self.snakes[0].control.2) {
-                self.snakes[0].turn(Dir::LEFT);
-            }
-            else if buffer == "w" {
-                self.snakes[0].grow();
-                self.snakes[0].grow();
-                self.snakes[0].grow();
-                self.snakes[0].grow();
-                self.snakes[0].grow();
+            for snk in self.snakes.iter_mut(){
+                if buffer == "q" {
+                    self.stdout.flush().unwrap(); //maybe should be different
+                    break
+                }
+                else if buffer.contains(&snk.control.3) {
+                    snk.turn(Dir::RIGHT);
+                }
+                else if buffer.contains(&snk.control.0) {
+                    snk.turn(Dir::UP);
+                }
+                else if buffer.contains(&snk.control.1) {
+                    snk.turn(Dir::DOWN);
+                }
+                else if buffer.contains(&snk.control.2) {
+                    snk.turn(Dir::LEFT);
+                }
+                else if buffer == "w" {
+                    snk.grow();
+                    snk.grow();
+                    snk.grow();
+                }
             }
             //moves the snake
-            self.snakes[0].go_forward();
+            for snk in self.snakes.iter_mut(){
+                snk.go_forward();
+            }
             //reset buffer
             buffer = String::from("");
         }
@@ -212,21 +214,35 @@ impl Game {
             }
         }
     }
-
+    /*fn one_remaining(&self) -> bool {
+        let mut death_number = 0;
+        for snk in self.snakes.iter(){
+            if snk.active==true {
+                death_number+=1;
+            }
+        }
+        death_number==1
+    }*/
     /*
     check collision between the snake and the walls
     returns true if it hit a wall or false otherwise
     NEED TO IMPLEMENT COLLISION OF THE SNAKE WITH ITSELF
     */
+
     fn snake_hit_wall(&mut self) {
         for snk in self.snakes.iter_mut() {
             let head = snk.body.back().unwrap();
             if head.x > LAST_X as u16 || head.x < FIRST_X as u16 
                 || head.y > LAST_Y as u16 || head.y < FIRST_Y as u16
-            {
+            /*{   *if self_copy.one_remaining(){
                 let score = snk.kill();
                 println!("Score {}: {}", snk.name, score);
+            }else {
+                snk.deactivate()
             }
+            }*/
+            {let score = snk.kill();
+            println!("Score {}: {}", snk.name, score);}
         }
     }
 
@@ -301,7 +317,7 @@ pub fn init_game(mode: i8) -> Game {
     let initial_point3 = Point::new(9, 16);
     let initial_point4 = Point::new(50, 5);
     let mut snake1 = Snake::new(initial_point1, ("i".to_string(),"k".to_string(),"j".to_string(),"l".to_string()), "Player1".to_string());
-    let mut snake2 = Snake::new(initial_point2, ("d".to_string(),"x".to_string(),"z".to_string(),"c".to_string()), "Player2".to_string());
+    let mut snake2 = Snake::new(initial_point2, ("f".to_string(),"c".to_string(),"x".to_string(),"v".to_string()), "Player2".to_string());
     let mut snake3 = Snake::new(initial_point3, ("h".to_string(),"n".to_string(),"b".to_string(),"m".to_string()), "Player3".to_string());
     let mut snake4 = Snake::new(initial_point4, ("w".to_string(),"s".to_string(),"a".to_string(),"d".to_string()), "Player4".to_string());
     let mut snakes_vec = vec![snake1, snake2, snake3, snake4];
