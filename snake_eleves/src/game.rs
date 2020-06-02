@@ -3,6 +3,7 @@ extern crate rand;
 
 use crate::snake::*;
 use std::io::{stdout, Stdout, Write};
+use std::num::Wrapping;
 use std::thread::sleep;
 use std::time::Duration;
 use termion::raw::{IntoRawMode, RawTerminal};
@@ -44,7 +45,7 @@ pub struct Game {
 }
 
 // Une coordonnée de notre terrain
-#[derive(PartialEq)] 
+#[derive(PartialEq, Copy, Clone)] 
 pub struct Point {
     pub x: u16,
     pub y: u16,
@@ -217,8 +218,9 @@ impl Game {
     NEED TO IMPLEMENT COLLISION OF THE SNAKE WITH ITSELF
     */
     fn snake_hit_wall(&mut self) {
+        let mut head;
         for snk in self.snakes.iter_mut() {
-            let head = snk.body.back().unwrap();
+            head = snk.body.back().unwrap();
             if head.x > LAST_X as u16 || head.x < FIRST_X as u16 
                 || head.y > LAST_Y as u16 || head.y < FIRST_Y as u16 {
                     snk.deactivate()
@@ -226,18 +228,24 @@ impl Game {
         }
     }
 
-    /*fn snake_hit_itself(&mut self) {
-        for snk in self.snakes.iter(){
-            let head = snk.body.pop_back().unwrap();
+    fn snake_hit_itself(&mut self) {
+        let mut head;
+        let mut deactivate = false;
+        for mut snk in self.snakes.iter_mut(){
+            head = snk.body.pop_back().unwrap();
             for body_part in snk.body.iter() {
                 if head == *body_part {
-                    let score = snk.kill();
-                    println!("Score {}: {}", snk.name, score);
+                    deactivate = true;
                 }
             }
-            self.snakes[0].body.push_back(head);
+            if deactivate {
+                snk.deactivate();
+                deactivate = false;
+            }
+            snk.body.push_back(head);
         }
-    }*/
+    }
+    
     fn all_dead(&self) -> bool {
         let mut death = true;
         for snk in self.snakes.iter(){
@@ -298,10 +306,10 @@ pub fn init_game(mode: i8) -> Game {
     let initial_point2 = Point::new(50, 16);
     let initial_point3 = Point::new(9, 16);
     let initial_point4 = Point::new(50, 5);
-    let mut snake1 = Snake::new(initial_point1, ("i".to_string(),"k".to_string(),"j".to_string(),"l".to_string()), "Player1".to_string());
-    let mut snake2 = Snake::new(initial_point2, ("f".to_string(),"c".to_string(),"x".to_string(),"v".to_string()), "Player2".to_string());
-    let mut snake3 = Snake::new(initial_point3, ("h".to_string(),"n".to_string(),"b".to_string(),"m".to_string()), "Player3".to_string());
-    let mut snake4 = Snake::new(initial_point4, ("w".to_string(),"s".to_string(),"a".to_string(),"d".to_string()), "Player4".to_string());
+    let mut snake1 = Snake::new(initial_point1, ("i".to_string(),"k".to_string(),"j".to_string(),"l".to_string()));
+    let mut snake2 = Snake::new(initial_point2, ("f".to_string(),"c".to_string(),"x".to_string(),"v".to_string()));
+    let mut snake3 = Snake::new(initial_point3, ("h".to_string(),"n".to_string(),"b".to_string(),"m".to_string()));
+    let mut snake4 = Snake::new(initial_point4, ("w".to_string(),"s".to_string(),"a".to_string(),"d".to_string()));
     let mut snakes_vec = vec![snake1, snake2, snake3, snake4];
     let mut i = mode;
     while i<4 {

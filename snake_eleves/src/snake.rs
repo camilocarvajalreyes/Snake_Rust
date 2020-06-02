@@ -8,14 +8,13 @@ pub struct Snake { //construction of the strut snake
     pub direction: Dir, // direction in which the head points, we created a special struc for that
     pub control: (String, String, String, String), //keys for moving the snake
     pub active: bool, // is it active or not (useful for multiplayer)
-    pub name: String, // name of the snake. Example: Player1, Artur, etc
 }
 impl Snake {
-    pub fn new(initial_point: Point, controllers: (String, String, String, String), player: String) -> Self { 
+    pub fn new(initial_point: Point, controllers: (String, String, String, String)) -> Self { 
         // order of controllers: up, down, left and right
         let mut vec = VecDeque::new();
         vec.push_back(initial_point);
-        Snake {body: vec, direction: Dir::RIGHT, control: controllers, active: true, name: player} 
+        Snake {body: vec, direction: Dir::RIGHT, control: controllers, active: true} 
         //function that returns a single point. Snake going up by default.
     }
 
