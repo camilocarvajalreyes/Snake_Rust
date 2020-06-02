@@ -142,16 +142,13 @@ impl Game {
         loop {
             // sleep according to game speed
             sleep(Duration::from_millis(self.speed));
-            //did it collide with a wall ?
-            if self.snake_hit_wall() {
-                let score = self.snakes[0].kill();
-                println!("Score {}: {}", self.snakes[0].name, score);
-                break
-            }
+            //did they collide with a wall ?
+            self.snake_hit_wall();
             //did it collide with itself ?
-            if self.snake_hit_itself() {
-                let score = self.snakes[0].kill();
-                println!("Score {}: {}", self.snakes[0].name, score);
+            // self.snake_hit_itself();
+            // all they all dead?
+            if self.all_dead(){
+                // show results
                 break
             }
             //did it reach the food ?
@@ -200,16 +197,18 @@ impl Game {
     }
 
     pub fn draw_snake(&mut self) {
-        for p in self.snakes[0].body.iter() {
-            write!(
-                self.stdout,
-                "{}{}",
-                cursor::Goto(p.x, p.y),
-                SNAKE_CHAR
-            )
-            .unwrap();
+        for snk in self.snakes.iter_mut() {
+            for p in snk.body.iter() {
+                write!(
+                    self.stdout,
+                    "{}{}",
+                    cursor::Goto(p.x, p.y),
+                    SNAKE_CHAR
+                )
+                .unwrap();
+            }
+            self.stdout.flush().unwrap();
         }
-        self.stdout.flush().unwrap();
     }
 
     /*
@@ -217,26 +216,38 @@ impl Game {
     returns true if it hit a wall or false otherwise
     NEED TO IMPLEMENT COLLISION OF THE SNAKE WITH ITSELF
     */
-    fn snake_hit_wall(&self) -> bool {
-        let head = self.snakes[0].body.back().unwrap();
-        if head.x > LAST_X as u16 || head.x < FIRST_X as u16 
-            || head.y > LAST_Y as u16 || head.y < FIRST_Y as u16
-        {
-            return true;
-        }
-
-        false
-    }
-
-    fn snake_hit_itself(&mut self) -> bool {
-        let head = self.snakes[0].body.pop_back().unwrap();
-        for body_part in self.snakes[0].body.iter() {
-            if head == *body_part {
-                return true;
+    fn snake_hit_wall(&mut self) {
+        for snk in self.snakes.iter_mut() {
+            let head = snk.body.back().unwrap();
+            if head.x > LAST_X as u16 || head.x < FIRST_X as u16 
+                || head.y > LAST_Y as u16 || head.y < FIRST_Y as u16
+            {
+                let score = snk.kill();
+                println!("Score {}: {}", snk.name, score);
             }
         }
-        self.snakes[0].body.push_back(head);
-        false
+    }
+
+    /*fn snake_hit_itself(&mut self) {
+        for snk in self.snakes.iter(){
+            let head = snk.body.pop_back().unwrap();
+            for body_part in snk.body.iter() {
+                if head == *body_part {
+                    let score = snk.kill();
+                    println!("Score {}: {}", snk.name, score);
+                }
+            }
+            self.snakes[0].body.push_back(head);
+        }
+    }*/
+    fn all_dead(&self) -> bool {
+        let mut death = true;
+        for snk in self.snakes.iter(){
+            if snk.active==true {
+                death = false;
+            }
+        }
+        death
     }
 
     fn snake_got_food(&self) -> bool {
@@ -283,15 +294,19 @@ pub fn init_game() -> Game {
     // Voir la documentation de _termion__ pour plus d'informations
     let stdout = stdout().into_raw_mode().unwrap();
     let stdin = async_stdin();
-    let initial_point1 = Point::new(5, 5);
-    let initial_point2 = Point::new(10, 10);
+    let initial_point1 = Point::new(9, 5);
+    let initial_point2 = Point::new(50, 16);
+    let initial_point3 = Point::new(9, 16);
+    let initial_point4 = Point::new(50, 5);
     let mut snake1 = Snake::new(initial_point1, ("i".to_string(),"k".to_string(),"j".to_string(),"l".to_string()), "Player1".to_string());
     snake1.activate();
     let mut snake2 = Snake::new(initial_point2, ("d".to_string(),"x".to_string(),"z".to_string(),"c".to_string()), "Player2".to_string());
+    let mut snake3 = Snake::new(initial_point3, ("h".to_string(),"n".to_string(),"b".to_string(),"m".to_string()), "Player3".to_string());
+    let mut snake4 = Snake::new(initial_point4, ("w".to_string(),"s".to_string(),"a".to_string(),"d".to_string()), "Player4".to_string());
     let game = Game {
         stdout: stdout,
         stdin: stdin,
-        snakes: vec![snake1, snake2],
+        snakes: vec![snake1, snake2, snake3, snake4],
         food: generate_food(),
         speed: SPEED,
         field: init_field(),
