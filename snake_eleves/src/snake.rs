@@ -15,7 +15,7 @@ impl Snake {
         // order of controllers: up, down, left and right
         let mut vec = VecDeque::new();
         vec.push_back(initial_point);
-        Snake {body: vec, direction: Dir::RIGHT, control: controllers, active: false, name: player} 
+        Snake {body: vec, direction: Dir::RIGHT, control: controllers, active: true, name: player} 
         //function that returns a single point. Snake going up by default.
     }
 
@@ -64,9 +64,6 @@ impl Snake {
             Dir::UP => self.direction = Dir::UP,
             Dir::DOWN => self.direction = Dir::DOWN,
         }
-    }
-    pub fn activate(&mut self) {
-        self.active = true;
     }
     pub fn deactivate(&mut self) {
         self.active = false;

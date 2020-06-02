@@ -304,10 +304,6 @@ pub fn init_game(mode: i8) -> Game {
     let mut snake2 = Snake::new(initial_point2, ("d".to_string(),"x".to_string(),"z".to_string(),"c".to_string()), "Player2".to_string());
     let mut snake3 = Snake::new(initial_point3, ("h".to_string(),"n".to_string(),"b".to_string(),"m".to_string()), "Player3".to_string());
     let mut snake4 = Snake::new(initial_point4, ("w".to_string(),"s".to_string(),"a".to_string(),"d".to_string()), "Player4".to_string());
-    snake1.activate();
-    snake2.activate();
-    snake3.activate();
-    snake4.activate();
     let mut snakes_vec = vec![snake1, snake2, snake3, snake4];
     let mut i = mode;
     while i<4 {
