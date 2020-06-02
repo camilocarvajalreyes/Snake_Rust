@@ -1,3 +1,4 @@
+#![allow(unused_mut)]
 extern crate rand;
 
 use crate::snake::*;
@@ -160,12 +161,12 @@ impl Game {
             self.stdin.read_to_string(&mut buffer).expect("");
             //println!("buffer = {}", buffer); 
             //treat input
+            if buffer.contains("q") {
+                self.stdout.flush().unwrap();
+                break
+            }
             for snk in self.snakes.iter_mut(){
-                if buffer == "q" {
-                    self.stdout.flush().unwrap(); //maybe should be different
-                    break
-                }
-                else if buffer.contains(&snk.control.3) {
+                if buffer.contains(&snk.control.3) {
                     snk.turn(Dir::RIGHT);
                 }
                 else if buffer.contains(&snk.control.0) {

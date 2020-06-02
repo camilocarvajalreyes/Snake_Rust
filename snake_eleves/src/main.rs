@@ -1,4 +1,5 @@
 #![allow(dead_code,unused_imports)]
+#![allow(unused_mut)]
 use crate::game::*; 
 use crate::snake::*; 
 pub mod game;
